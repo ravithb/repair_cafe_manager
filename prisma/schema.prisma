@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model customers {
+  id        Int     @id @default(autoincrement())
+  title     String? @db.VarChar(8)
+  firstname String? @db.VarChar(32)
+  lastname  String? @db.VarChar(32)
+  email     String? @db.VarChar(64)
+  phone     String? @db.VarChar(32)
+}
+
+model locations {
+  id       Int    @id @default(autoincrement())
+  location String @db.VarChar(64)
+}
+
+model repair_session_items {
+  repair_session_id     Int
+  repair_item_id        Int
+  repair_status         Int
+  notes                 Int
+  primary_repairer_id   Int
+  secondary_repairer_id Int
+
+  @@id([repair_session_id, repair_item_id])
+}
+
+model repair_sessions {
+  id           Int       @id @default(autoincrement())
+  session_date DateTime? @db.Date
+  location_id  Int?
+  timeslot     String?   @db.VarChar(32)
+  token_no     Int?
+  customer_id  Int?
+}
+
+model repairers {
+  id        Int     @id @default(autoincrement())
+  title     String? @db.VarChar(8)
+  firstname String? @db.VarChar(64)
+  lastname  String? @db.VarChar(64)
+  email     String? @db.VarChar(256)
+  phone     String? @db.VarChar(32)
+}
+
+model repairitems {
+  id                 Int     @id @default(autoincrement())
+  item               String? @db.VarChar(256)
+  fault              String? @db.Text
+  weight             Float?  @db.Float
+  last_repair_status String? @db.VarChar(16)
+  last_session_id    Int?
+  customer_id        Int?
+}
