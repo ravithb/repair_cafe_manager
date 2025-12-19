@@ -1,8 +1,8 @@
 'use client'; 
 
 import { useEffect, useState } from 'react';
-import { getLocations } from "@/app/actions/actions";
-import LocationSelector from './LocationSelector';
+import { getLocations } from "@/actions/locations";
+import RepairSessionSelector from './RepairSessionSelector';
 
 //const locations = ['New York', 'London', 'Tokyo', 'Sydney'];
 
@@ -25,13 +25,13 @@ export default function Header() {
     <header className="flex items-center justify-between p-4 bg-white border-b border-gray-200 shadow-md fixed w-full top-0 z-20 h-16">
       {/* Left side: Logo/Title */}
       <div className="text-xl font-semibold text-indigo-600">
-        Repair Cafe Dashboard
+        Fixlog :: Repair cafe manager
       </div>
 
       {/* Right side: Controls (Location, User Icon, Logout) */}
       <div className="flex items-center space-x-4">
         {/* Pass the server-fetched data to the client component */}
-        <LocationSelector locations={locations} />
+        <RepairSessionSelector locations={locations} />
         {/* Location Dropdown */}
         {/*<select
           value={selectedLocation}

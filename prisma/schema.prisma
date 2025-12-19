@@ -50,12 +50,22 @@ model repairers {
   phone     String? @db.VarChar(32)
 }
 
-model repairitems {
+model repair_items {
   id                 Int     @id @default(autoincrement())
   item               String? @db.VarChar(256)
+  make               String  @db.VarChar(64)
+  model              String  @db.VarChar(64)
   fault              String? @db.Text
   weight             Float?  @db.Float
   last_repair_status String? @db.VarChar(16)
   last_session_id    Int?
   customer_id        Int?
+  category_id        Int?
+  category    repair_item_categories? @relation(fields: [category_id], references: [id])
+}
+
+model repair_item_categories {
+  id       Int    @id @default(autoincrement())
+  category String @db.VarChar(256)
+  repair_items repair_items[]
 }

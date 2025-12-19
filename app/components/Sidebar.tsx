@@ -1,14 +1,13 @@
 const navItems = [
-  { name: 'Dashboard', href: '#dashboard' },
-  { name: 'Analytics', href: '#analytics' },
-  { name: 'Projects', href: '#projects' },
-  { name: 'Settings', href: '#settings' },
+  { name: 'Home', href: '/' },
+  { name: 'Repairs', href: '/repairs' },
+  { name: 'Settings', href: '/settings' },
 ];
 
 export default function Sidebar() {
   return (
     <nav className="w-64 bg-gray-800 text-white p-4 flex flex-col space-y-2 h-screen sticky top-0 md:top-16">
-      <h2 className="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">Navigation</h2>
+      <h2 className="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">Menu</h2>
       {navItems.map((item) => (
         <a
           key={item.name}
