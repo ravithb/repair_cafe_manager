@@ -1,0 +1,18 @@
+import dayjs from "dayjs";
+
+export interface Customer {
+  id: number;
+  title?: string;
+  firstname: string;
+  lastname: string;
+  phone?: string;
+  email?: string;
+}
+
+export interface Pagination {
+   skip: number; 
+   itemsPerPage: number;
+   totalCount: number;
+   currentPage: number; 
+   totalPages: number;
+}

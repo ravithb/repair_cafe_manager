@@ -1,8 +1,10 @@
 'use client'
 
-import RecoilContextProvider from "@/app/components/RecoilContextProvider";
+
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import GlobalStateContextProvider from './GlobalStateContextProvider';
+import 'dayjs/locale/en-gb';
 
 interface AppProps {
   children: React.ReactNode
@@ -11,10 +13,10 @@ interface AppProps {
 export default function App({children} : AppProps) {
 
   return(  
-    <RecoilContextProvider>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <GlobalStateContextProvider>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
         {children}
       </LocalizationProvider>
-    </RecoilContextProvider>  
+    </GlobalStateContextProvider>  
   )
 }

@@ -9,6 +9,9 @@ export async function createRepairItem(formData: FormData) {
   const weight = parseFloat(formData.get("weight") as string);
   const status = formData.get("status") as string;
   const notes = formData.get("notes") as string;
+  const make = formData.get("make") as string;
+  const model = formData.get("model") as string;
+  const fault = formData.get("fault") as string;
 
   // Use a transaction to ensure both are created or none
   await prisma.$transaction(async (tx) => {
@@ -32,4 +35,12 @@ export async function createRepairItem(formData: FormData) {
   });
 
   revalidatePath("/repair-items");
+}
+
+export async function upsertRepairItem(formData: FormData) {
+
+}
+
+export async function deleteRepairItem(id:string | Number) {
+
 }

@@ -52,9 +52,9 @@ model repairers {
 
 model repair_items {
   id                 Int     @id @default(autoincrement())
-  item               String? @db.VarChar(256)
-  make               String  @db.VarChar(64)
-  model              String  @db.VarChar(64)
+  item               String @db.VarChar(256)
+  make               String?  @db.VarChar(64)
+  model              String?  @db.VarChar(64)
   fault              String? @db.Text
   weight             Float?  @db.Float
   last_repair_status String? @db.VarChar(16)
