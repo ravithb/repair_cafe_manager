@@ -60,7 +60,7 @@ export default function CustomerSearchTypeahead({ onSelect, label, placeholder }
               {option.phone}
             </Typography>
           </Box>
-          <span className="flex flex-col">
+          <span className="flex flex-col" key={"sp-"+option.id}>
             <Box key={"nm-"+option.id}>
             <Typography variant="caption" color="text.secondary" sx={{ ml: 4 }}>
               {option.title} {option.firstname} {option.lastname}

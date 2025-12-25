@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import RepairItemsTable from "./RepairItemsTable";
+import { getLocations } from "@/actions/locations";
 
 export default async function RepairsListPage({
   searchParams,
@@ -13,22 +14,23 @@ export default async function RepairsListPage({
   const skip = (currentPage - 1) * itemsPerPage;
 
   // Fetch data and total count in parallel
-  const [repairItems, totalCount, categories, repairers] = await Promise.all([
-    prisma.repair_items.findMany({
+  const [repairSessionItems, totalCount, categories, repairers, locations] = await Promise.all([
+    prisma.repair_session_items.findMany({
       skip,
       take: itemsPerPage,
-      orderBy: { id: "desc" },
-      //include: { category: true } // Assuming a relation exists in schema
+      orderBy: { repair_session_id: "desc" },
+      include: { repair_item: true, repair_session: true } // Assuming a relation exists in schema
     }),
     prisma.repair_items.count(),
     prisma.repair_item_categories.findMany({ orderBy: { category: 'asc' } }),
-    prisma.repairers.findMany({ orderBy: [{ firstname: 'asc'}, {lastname: 'asc' }] })
+    prisma.repairers.findMany({ orderBy: [{ firstname: 'asc'}, {lastname: 'asc' }] }),
+    getLocations()
   ]);
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   return (
-    <RepairItemsTable repairItems={repairItems} categories={categories} repairers={repairers} pagination={
+    <RepairItemsTable repairSessionItems={repairSessionItems} categories={categories} repairers={repairers} locations={locations} pagination={
       {
         totalCount, skip, itemsPerPage, currentPage, totalPages
       }

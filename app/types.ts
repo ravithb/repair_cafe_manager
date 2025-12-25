@@ -16,3 +16,8 @@ export interface Pagination {
    currentPage: number; 
    totalPages: number;
 }
+
+export interface OperationResult {
+  success: boolean;
+  error?: string | null;
+}

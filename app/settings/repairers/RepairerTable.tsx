@@ -124,7 +124,7 @@ export default function RepairerTable({ initialData }: { initialData: any[] }) {
                       <td className="px-6 py-4 text-right space-x-4">
                         <button 
                           onClick={() => setEditingId(r.id)} 
-                          className="text-blue-600 hover:text-blue-800 font-medium"
+                          className="text-blue-600 hover:underline font-medium"
                         >
                           Edit
                         </button>
@@ -134,7 +134,7 @@ export default function RepairerTable({ initialData }: { initialData: any[] }) {
                               await deleteRepairer(r.id);
                             }
                           }} 
-                          className="text-red-500 hover:text-red-700 font-medium"
+                          className="text-red-600 hover:underline font-medium"
                         >
                           Delete
                         </button>

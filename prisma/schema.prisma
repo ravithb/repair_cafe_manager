@@ -8,12 +8,14 @@ datasource db {
 }
 
 model customers {
-  id        Int     @id @default(autoincrement())
-  title     String? @db.VarChar(8)
-  firstname String? @db.VarChar(32)
-  lastname  String? @db.VarChar(32)
-  email     String? @db.VarChar(64)
-  phone     String? @db.VarChar(32)
+  id          Int            @id @default(autoincrement())
+  title       String?        @db.VarChar(8)
+  firstname   String?        @db.VarChar(32)
+  lastname    String?        @db.VarChar(32)
+  email       String?        @db.VarChar(64)
+  phone       String?        @db.VarChar(32)
+  repairItems repair_items[]
+  repairSessions repair_sessions[]
 }
 
 model locations {
@@ -24,21 +26,25 @@ model locations {
 model repair_session_items {
   repair_session_id     Int
   repair_item_id        Int
-  repair_status         Int
-  notes                 Int
-  primary_repairer_id   Int
-  secondary_repairer_id Int
-
+  repair_status         String?
+  notes                 String?
+  primary_repairer_id   Int?
+  secondary_repairer_id Int?
+  repair_item           repair_items? @relation(fields: [repair_item_id], references: [id])
+  repair_session        repair_sessions? @relation(fields: [repair_session_id], references: [id])
   @@id([repair_session_id, repair_item_id])
 }
 
 model repair_sessions {
-  id           Int       @id @default(autoincrement())
-  session_date DateTime? @db.Date
+  id           Int            @id @default(autoincrement())
+  session_date DateTime?      @db.Date
   location_id  Int?
-  timeslot     String?   @db.VarChar(32)
+  timeslot     String?        @db.VarChar(32)
   token_no     Int?
   customer_id  Int?
+  customer     customers? @relation(fields: [customer_id], references: [id])
+  repairItems  repair_items[]
+  repairSessionItems repair_session_items[]
 }
 
 model repairers {
@@ -51,21 +57,25 @@ model repairers {
 }
 
 model repair_items {
-  id                 Int     @id @default(autoincrement())
-  item               String @db.VarChar(256)
-  make               String?  @db.VarChar(64)
-  model              String?  @db.VarChar(64)
-  fault              String? @db.Text
-  weight             Float?  @db.Float
-  last_repair_status String? @db.VarChar(16)
+  id                 Int                     @id @default(autoincrement())
+  item               String                  @db.VarChar(256)
+  make               String?                 @db.VarChar(64)
+  model              String?                 @db.VarChar(64)
+  fault              String?                 @db.Text
+  weight             Float?                  @db.Float
+  last_repair_status String?                 @db.VarChar(16)
   last_session_id    Int?
   customer_id        Int?
   category_id        Int?
-  category    repair_item_categories? @relation(fields: [category_id], references: [id])
+  repair_sessions_id  Int?
+  session            repair_sessions?        @relation(fields: [repair_sessions_id], references: [id])
+  category           repair_item_categories? @relation(fields: [category_id], references: [id])
+  customer           customers?              @relation(fields: [customer_id], references: [id])
+  repairSessionItems repair_session_items[]  
 }
 
 model repair_item_categories {
-  id       Int    @id @default(autoincrement())
-  category String @db.VarChar(256)
+  id           Int            @id @default(autoincrement())
+  category     String         @db.VarChar(256)
   repair_items repair_items[]
 }

@@ -13,6 +13,15 @@ export async function searchCustomers(searchKey: string) : Promise<Customer[]> {
           { lastname: { contains : searchKey }}
         ]
       },
+      distinct: ['id'],
+      select: {
+        id: true,
+        title: true,
+        firstname: true,
+        lastname: true,
+        email: true,
+        phone: true 
+      },
       orderBy:  [
         {firstname:'asc'},
         {lastname:'asc'}
