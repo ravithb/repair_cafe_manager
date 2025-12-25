@@ -30,8 +30,8 @@ model repair_session_items {
   notes                 String?
   primary_repairer_id   Int?
   secondary_repairer_id Int?
-  repair_item           repair_items? @relation(fields: [repair_item_id], references: [id])
-  repair_session        repair_sessions? @relation(fields: [repair_session_id], references: [id])
+  repairItem           repair_items? @relation(fields: [repair_item_id], references: [id])
+  repairSession        repair_sessions? @relation(fields: [repair_session_id], references: [id])
   @@id([repair_session_id, repair_item_id])
 }
 
@@ -77,5 +77,5 @@ model repair_items {
 model repair_item_categories {
   id           Int            @id @default(autoincrement())
   category     String         @db.VarChar(256)
-  repair_items repair_items[]
+  repairItems repair_items[]
 }

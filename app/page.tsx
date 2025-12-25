@@ -8,7 +8,7 @@ export default async function DashboardPage() {
   // Fetch aggregate data for charts
   const [items, categories] = await Promise.all([
     prisma.repair_items.findMany(),
-    prisma.repair_item_categories.findMany({ include: { _count: { select: { repair_items: true } } } }),
+    prisma.repair_item_categories.findMany({ include: { _count: { select: { repairItems: true } } } }),
     // prisma.repair_item_sessions.findMany(),
   ]);
 
@@ -23,7 +23,7 @@ export default async function DashboardPage() {
   // Transform data for Category Pie Chart
   const categoryChartData = categories.map(cat => ({
     name: cat.category,
-    value: cat._count.repair_items
+    value: cat._count.repairItems
   }));
 
   return (

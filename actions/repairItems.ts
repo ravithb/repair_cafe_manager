@@ -48,6 +48,17 @@ export async function createRepairItem(formData: FormData): Promise<OperationRes
           },
         });
         customerId = newCustomer.id + "";
+      }else{
+        await tx.customers.update({
+          data: {
+            title,
+            firstname,
+            lastname,
+            email,
+            phone
+          },
+          where: { id: parseInt(customerId) }
+        })
       }
 
       console.log('location ' + locationId + " sessionDate " + sessionDate);
@@ -98,10 +109,7 @@ export async function createRepairItem(formData: FormData): Promise<OperationRes
       return { success: true, error: null };
 
 
-    },  {
-    timeout: 600000, // Increase to 10 seconds (in milliseconds)
-    maxWait: 5000,  // Increase to 5 seconds (in milliseconds)
-  });
+    });
 
   } catch (e: any) {
     return { success: false, error: "Error saving item. " + e.message };
@@ -111,10 +119,171 @@ export async function createRepairItem(formData: FormData): Promise<OperationRes
 
 }
 
-export async function upsertRepairItem(formData: FormData) {
+export async function updateRepairItem(formData: FormData) {
+  const repairItemId = formData.get("repairItemId") as string;
+  const repairSessionId = formData.get("repairSessionId") as string;
+  const item = formData.get("item") as string;
+  const categoryId = Number(formData.get("categoryId"));
+  const weight = parseFloat(formData.get("weight") as string);
+  const status = formData.get("status") as string;
+  const make = formData.get("make") as string;
+  const model = formData.get("model") as string;
+  const fault = formData.get("fault") as string;
+  // customer fields
+  let customerId = formData.get("customerId") as string;
+  const title = formData.get("customerTitle") as string;
+  const firstname = formData.get("customerFirstName") as string;
+  const lastname = formData.get("customerLastName") as string;
+  const phone = formData.get("customerPhone") as string;
+  const email = formData.get("customerEmail") as string;
 
+  // repair attempt
+  const notes = formData.get("notes") as string;
+  const locationId = formData.get("locationId") as string;
+  const sessionDate = formData.get("sessionDate") as string;
+  const primaryRepairerId = formData.get("primaryRepairerId") as string;
+  const secondaryRepairerId = formData.get("secondaryRepairerId") as string;
+
+
+
+  // Use a transaction to ensure both are created or none
+  try {
+    return await prisma.$transaction(async (tx) => {
+
+      if (typeof customerId == 'undefined' || customerId == null || customerId.trim().length == 0) {
+        const newCustomer = await tx.customers.create({
+          data: {
+            title,
+            firstname,
+            lastname,
+            email,
+            phone
+          },
+        });
+        customerId = newCustomer.id + "";
+      }else{
+        await tx.customers.update({
+          data: {
+            title,
+            firstname,
+            lastname,
+            email,
+            phone
+          },
+          where: { id: parseInt(customerId) }
+        })
+      }
+
+      const sessionDateYMD = dayjs(sessionDate, 'DD/MM/YYYY');
+
+      await tx.repair_sessions.update({
+        data: {
+          location_id: parseInt(locationId),
+          session_date: sessionDateYMD.toDate(),
+          customer_id: parseInt(customerId)
+        },
+        where: {
+          id: parseInt(repairSessionId)
+        }
+      });
+      
+
+      await tx.repair_items.update({
+        data: {
+          item,
+          fault,
+          make,
+          model,
+          category_id: categoryId,
+          weight,
+          last_repair_status: status,
+          customer_id: parseInt(customerId),
+        },
+        where: {
+          id: parseInt(repairItemId)
+        }
+      });
+      await tx.repair_session_items.update({
+        data: {
+          repair_status: status,
+          notes: notes,
+          primary_repairer_id: parseInt(primaryRepairerId),
+          secondary_repairer_id: parseInt(secondaryRepairerId),
+        },
+        where: {
+          repair_session_id_repair_item_id: {
+            repair_session_id: parseInt(repairSessionId),
+            repair_item_id: parseInt(repairItemId)
+          }
+        }
+      });
+      return { success: true, error: null };
+
+    },  );
+
+  } catch (e: any) {
+    return { success: false, error: "Error saving item. " + e.message };
+  } finally{
+    revalidatePath("/repairs");
+  }
 }
 
-export async function deleteRepairItem(id: string | Number) {
+export async function deleteRepairItem(repairItemId: string | Number) {
 
+
+  // Use a transaction to ensure both are created or none
+  try {
+    return await prisma.$transaction(async (tx) => {
+
+      const repairItem = await tx.repair_items.findFirst({
+        where: {
+          id: parseInt(repairItemId as string)
+        }
+      });
+      if(repairItem == null){
+        return { success: false, error: "Item not found" };;
+      }
+
+      const otherItemsInSession = await tx.repair_session_items.count({
+        where: {
+          repair_session_id: repairItem.repair_sessions_id as number,
+          NOT: {
+            repair_item_id: parseInt(repairItemId as string)
+          }
+        }
+      });
+
+      if(otherItemsInSession == 0){
+         await tx.repair_session_items.delete({
+          where: {
+            repair_session_id_repair_item_id: {
+              repair_session_id: repairItem.repair_sessions_id as number,
+              repair_item_id: parseInt(repairItemId as string) as number
+            }
+          }
+        });
+
+        await tx.repair_sessions.delete({
+          where: {
+            id: repairItem.repair_sessions_id as number
+          }
+        });
+      }
+
+      await tx.repair_items.delete({
+        where: {
+          id: parseInt(repairItemId as string)
+        }
+      });
+
+      return { success: true, error: null };
+
+    },  );
+
+  } catch (e: any) {
+    console.log(e);
+    return { success: false, error: "Error saving item. " + e.message };
+  } finally{
+    revalidatePath("/repairs");
+  }
 }
