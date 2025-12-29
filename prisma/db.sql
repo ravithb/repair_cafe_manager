@@ -3,13 +3,19 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Dec 25, 2025 at 11:13 AM
+-- Generation Time: Dec 29, 2025 at 12:38 PM
 -- Server version: 8.0.44-0ubuntu0.24.04.2
 -- PHP Version: 8.2.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `repair_cafe_data`
@@ -23,12 +29,12 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `customers` (
   `id` int NOT NULL,
-  `title` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `firstname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `lastname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `email` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `phone` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `title` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `firstname` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `lastname` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -38,8 +44,8 @@ CREATE TABLE `customers` (
 
 CREATE TABLE `locations` (
   `id` int NOT NULL,
-  `location` varchar(64) COLLATE utf8mb4_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `location` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -49,12 +55,12 @@ CREATE TABLE `locations` (
 
 CREATE TABLE `repairers` (
   `id` int NOT NULL,
-  `title` varchar(8) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `firstname` varchar(64) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `lastname` varchar(64) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `email` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `phone` varchar(32) COLLATE utf8mb4_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `title` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `firstname` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `lastname` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -64,17 +70,17 @@ CREATE TABLE `repairers` (
 
 CREATE TABLE `repair_items` (
   `id` int NOT NULL,
-  `item` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
-  `make` varchar(64) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `model` varchar(64) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `fault` text COLLATE utf8mb4_general_ci,
+  `item` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `make` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `model` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fault` text COLLATE utf8mb4_unicode_ci,
   `weight` float DEFAULT NULL,
-  `last_repair_status` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `last_repair_status` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `last_session_id` int DEFAULT NULL,
   `customer_id` int DEFAULT NULL,
   `category_id` int DEFAULT NULL,
   `repair_sessions_id` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -84,8 +90,8 @@ CREATE TABLE `repair_items` (
 
 CREATE TABLE `repair_item_categories` (
   `id` int NOT NULL,
-  `category` varchar(256) COLLATE utf8mb4_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `category` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -97,10 +103,10 @@ CREATE TABLE `repair_sessions` (
   `id` int NOT NULL,
   `session_date` date DEFAULT NULL,
   `location_id` int DEFAULT NULL,
-  `timeslot` varchar(32) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `timeslot` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `token_no` int DEFAULT NULL,
   `customer_id` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -111,11 +117,23 @@ CREATE TABLE `repair_sessions` (
 CREATE TABLE `repair_session_items` (
   `repair_session_id` int NOT NULL,
   `repair_item_id` int NOT NULL,
-  `repair_status` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `notes` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `repair_status` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notes` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `primary_repairer_id` int DEFAULT NULL,
   `secondary_repairer_id` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int NOT NULL,
+  `email` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `roles` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexes for dumped tables
@@ -144,9 +162,9 @@ ALTER TABLE `repairers`
 --
 ALTER TABLE `repair_items`
   ADD PRIMARY KEY (`id`),
+  ADD KEY `repair_items_repair_sessions_id_fkey` (`repair_sessions_id`),
   ADD KEY `repair_items_category_id_fkey` (`category_id`),
-  ADD KEY `repair_items_customer_id_fkey` (`customer_id`),
-  ADD KEY `repair_items_repair_sessions_id_fkey` (`repair_sessions_id`);
+  ADD KEY `repair_items_customer_id_fkey` (`customer_id`);
 
 --
 -- Indexes for table `repair_item_categories`
@@ -167,6 +185,13 @@ ALTER TABLE `repair_sessions`
 ALTER TABLE `repair_session_items`
   ADD PRIMARY KEY (`repair_session_id`,`repair_item_id`),
   ADD KEY `repair_session_items_repair_item_id_fkey` (`repair_item_id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `users_email_key` (`email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -209,6 +234,12 @@ ALTER TABLE `repair_sessions`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- Constraints for dumped tables
 --
 
@@ -233,3 +264,7 @@ ALTER TABLE `repair_session_items`
   ADD CONSTRAINT `repair_session_items_repair_item_id_fkey` FOREIGN KEY (`repair_item_id`) REFERENCES `repair_items` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   ADD CONSTRAINT `repair_session_items_repair_session_id_fkey` FOREIGN KEY (`repair_session_id`) REFERENCES `repair_sessions` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

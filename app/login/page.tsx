@@ -1,11 +1,18 @@
 'use client';
 import { signIn } from "next-auth/react";
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react'
+
+function LoginButton(){
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
+
+  return (<button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium" onClick={() => signIn("google", { callbackUrl })}>Sign in</button>);
+}
 
 export default function Login() {
 
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  
 
   return (<>
     {/* Outer container: Flexbox makes the child (box) perfectly centered */}
@@ -22,8 +29,9 @@ export default function Login() {
         <p className="text-gray-600 mb-6">
           Please click below to sign in using your makerspace / samakers email credentials.
         </p>
-        
-        <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium" onClick={() => signIn("google", { callbackUrl })}>Sign in</button>
+        <Suspense>
+          <LoginButton />
+        </Suspense>
       </div>
     </div>
    </>
