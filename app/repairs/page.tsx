@@ -19,7 +19,7 @@ export default async function RepairsListPage({
       skip,
       take: itemsPerPage,
       orderBy: { repair_session_id: "desc" },
-      include: { repair_item: true, repair_session: true } // Assuming a relation exists in schema
+      include: { repairItem: true, repairSession: { include :{ customer : true }} } // Assuming a relation exists in schema
     }),
     prisma.repair_items.count(),
     prisma.repair_item_categories.findMany({ orderBy: { category: 'asc' } }),

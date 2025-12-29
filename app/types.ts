@@ -21,3 +21,12 @@ export interface OperationResult {
   success: boolean;
   error?: string | null;
 }
+
+// --- Types ---
+export type Role = 'ADMIN' | 'REPAIRER' | 'GUEST';
+
+export interface User {
+  id?: number;
+  email: string;
+  roles: Role[];
+}

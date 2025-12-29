@@ -5,6 +5,7 @@ import { RepairBarChart } from "@/app/components/dashboard/RepairBarChart";
 import { CategoryPieChart } from "@/app/components/dashboard/CategoryPieChart";
 
 export default async function DashboardPage() {
+
   // Fetch aggregate data for charts
   const [items, categories] = await Promise.all([
     prisma.repair_items.findMany(),
@@ -58,12 +59,16 @@ export default async function DashboardPage() {
             <p className="mt-2 text-blue-100 text-sm">Jump straight into managing your active repair queue.</p>
           </div>
           <div className="space-y-3 mt-8">
-            <Link href="/repair-items" className="flex items-center justify-between w-full p-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all group">
+            <Link href="/repairs" className="flex items-center justify-between w-full p-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all group">
               <span className="font-medium">View All Repairs</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link href="/repairers" className="flex items-center justify-between w-full p-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all group">
+            <Link href="/settings/repairers" className="flex items-center justify-between w-full p-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all group">
               <span className="font-medium">Manage Team</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link href="/settings/categories" className="flex items-center justify-between w-full p-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all group">
+              <span className="font-medium">Manage Categories</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>

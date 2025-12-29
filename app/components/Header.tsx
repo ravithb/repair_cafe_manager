@@ -3,12 +3,14 @@
 import { useEffect, useState } from 'react';
 import { getLocations } from "@/actions/locations";
 import RepairSessionSelector from './RepairSessionSelector';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 //const locations = ['New York', 'London', 'Tokyo', 'Sydney'];
 
 export default function Header() {
   //const [selectedLocation, setSelectedLocation] = useState(locations[0]);
   const [locations, setLocations] = useState<{id: number, location: string}[]>([]);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     // Calling the Server Action from the client
@@ -16,9 +18,7 @@ export default function Header() {
   }, []);
 
   const handleLogout = () => {
-    // Implement actual logout logic here (e.g., clear session, redirect to login page)
-    console.log('User logged out');
-    alert('Logging out...'); 
+    signOut();
   };
 
   return (
@@ -27,27 +27,15 @@ export default function Header() {
       <div className="text-xl font-semibold text-indigo-600">
         Fixlog :: Repair cafe manager
       </div>
-
+      {session && (<>
       {/* Right side: Controls (Location, User Icon, Logout) */}
       <div className="flex items-center space-x-4">
         {/* Pass the server-fetched data to the client component */}
         <RepairSessionSelector locations={locations} />
-        {/* Location Dropdown */}
-        {/*<select
-          value={selectedLocation}
-          onChange={(e) => setSelectedLocation(e.target.value)}
-          className="p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm appearance-none cursor-pointer"
-        >
-          {locations.map((location) => (
-            <option key={location} value={location}>
-              {location}
-            </option>
-          ))}
-        </select>*/}
 
         {/* User Icon/Avatar */}
         <div 
-          title="User Profile"
+          title={(session?.user?.name + " : " + session?.user?.roles?.join(","))}
           className="p-2 bg-indigo-100 text-indigo-600 rounded-full cursor-pointer hover:bg-indigo-200 transition duration-150"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -61,8 +49,9 @@ export default function Header() {
           className="px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 transition duration-150"
         >
           Logout
-        </button>
+        </button>        
       </div>
+      </>)}
     </header>
   );
 }

@@ -7,6 +7,12 @@ datasource db {
   provider = "mysql"
 }
 
+model users {
+  id          Int            @id @default(autoincrement())
+  email       String  @unique @db.VarChar(256)
+  roles       String? @db.VarChar(256)
+}
+
 model customers {
   id          Int            @id @default(autoincrement())
   title       String?        @db.VarChar(8)

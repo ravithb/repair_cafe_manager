@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { upsertRepairer, deleteRepairer } from "@/actions/repairers";
+import { Check, Edit, Save, Trash2, X } from "lucide-react";
 
 export default function RepairerTable({ initialData }: { initialData: any[] }) {
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -47,19 +48,21 @@ export default function RepairerTable({ initialData }: { initialData: any[] }) {
           </div>
 
           <div className="md:col-span-2">
-            <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded-md font-bold hover:bg-blue-700 transition-all shadow-sm active:scale-95">
-              Save
+            <button type="submit" className="rounded-md p-1 mr-1 text-white bg-blue-500 hover:bg-blue-700 transition-colors">
+              <Save className="w-5 h-5"/>
             </button>
           </div>
         </div>
       </form>
 
       {/* Table */}
-      <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-sm text-left">
           <thead className="bg-gray-50 text-gray-600 font-bold uppercase text-[10px] tracking-widest">
             <tr>
-              <th className="px-6 py-4">Name</th>
+              <th className="px-6 py-4">Title</th>
+              <th className="px-6 py-4">First Name</th>
+              <th className="px-6 py-4">Last Name</th>
               <th className="px-6 py-4">Email</th>
               <th className="px-6 py-4">Phone</th>
               <th className="px-6 py-4 text-right">Actions</th>
@@ -100,15 +103,18 @@ export default function RepairerTable({ initialData }: { initialData: any[] }) {
                         </div>
                         
                         <div className="md:col-span-2 flex justify-end gap-2">
-                          <button type="submit" className="text-green-600 font-bold text-xs hover:bg-green-100 px-2 py-1 rounded">
-                            SAVE
+                          <button type="submit" className="rounded-md p-1 mr-1 text-emerald-600 hover:bg-emerald-50 transition-colors"
+                              title="Save Changes"
+                            >
+                              <Check className="h-5 w-5" />
                           </button>
                           <button 
                             type="button" 
                             onClick={() => setEditingId(null)}
-                            className="text-gray-500 font-bold text-xs hover:bg-gray-200 px-2 py-1 rounded"
-                          >
-                            CANCEL
+                            className="rounded-md p-1 text-slate-400 hover:bg-slate-100 transition-colors"
+                              title="Cancel"
+                            >
+                              <X className="h-5 w-5" />
                           </button>
                         </div>
                       </form>
@@ -124,9 +130,10 @@ export default function RepairerTable({ initialData }: { initialData: any[] }) {
                       <td className="px-6 py-4 text-right space-x-4">
                         <button 
                           onClick={() => setEditingId(r.id)} 
-                          className="text-blue-600 hover:underline font-medium"
+                          className="rounded-md p-1 mr-1 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                              title="Edit Repairer"
                         >
-                          Edit
+                          <Edit className="h-5 w-5" />
                         </button>
                         <button 
                           onClick={async () => {
@@ -134,9 +141,10 @@ export default function RepairerTable({ initialData }: { initialData: any[] }) {
                               await deleteRepairer(r.id);
                             }
                           }} 
-                          className="text-red-600 hover:underline font-medium"
+                          className="rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                              title="Delete Repairer"
                         >
-                          Delete
+                          <Trash2 className="h-5 w-5" />
                         </button>
                       </td>
                     </>

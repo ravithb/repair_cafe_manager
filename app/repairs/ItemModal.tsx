@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useContext, useEffect, forwardRef, useImperativeHandle } from "react";
-import { createRepairItem } from "@/actions/repairItems";
+import { createRepairItem, updateRepairItem } from "@/actions/repairItems";
 import CustomerSearchTypeahead from "./CustomerSearchTypeahead";
 import { GlobalStateContext } from "@/app/components/GlobalStateContextProvider";
 import { TextField } from "@mui/material";
@@ -19,7 +19,8 @@ const ItemModal = forwardRef(({ categories, repairers, locations, onSave, onCanc
   const { selectedDate, setSelectedDate, selectedLocation, setSelectedLocation } = useContext(GlobalStateContext)
 
   // form fields
-  const [repairItemId, setRepairItemId] = useState<string | null>("");
+  const [repairItemId, setRepairItemId] = useState<string>("");
+  const [repairSessionId, setRepairSessionId] = useState<string>("");
   const [item, setItem] = useState("");
   const [fault, setFault] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -33,14 +34,21 @@ const ItemModal = forwardRef(({ categories, repairers, locations, onSave, onCanc
   const [primaryRepairerId, setPrimaryRepairerId] = useState("");
   const [secondaryRepairerId, setSecondaryRepairerId] = useState("");
 
+  const [customerId, setCustomerId] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+
 
   function setCurrentItem(repairSessionItem: any) {
-    console.log('setItem customer ', repairSessionItem?.repair_session);
-    if(!repairSessionItem || !repairSessionItem.repair_item){
+    if(!repairSessionItem || !repairSessionItem.repairItem){
       return;
     }
-    const repairItem = repairSessionItem?.repair_item;
+    const repairItem = repairSessionItem?.repairItem;
     setRepairItemId(repairSessionItem?.repair_item_id);
+    setRepairSessionId(repairSessionItem?.repair_session_id);
     setItem(repairItem?.item);
     setFault(repairItem?.fault);
     setCategoryId(repairItem?.category_id);
@@ -49,11 +57,42 @@ const ItemModal = forwardRef(({ categories, repairers, locations, onSave, onCanc
     setModel(repairItem?.model);
     setNotes(repairSessionItem?.notes);
     setRepairStatus(repairItem?.repair_status);
-    setSessionDate(dayjs(repairSessionItem?.repair_session?.session_date));
-    setLocationId(repairSessionItem?.repair_session?.location_id || "");
+    setSessionDate(dayjs(repairSessionItem?.repairSession?.session_date));
+    setLocationId(repairSessionItem?.repairSession?.location_id || "");
     setPrimaryRepairerId(repairSessionItem?.primary_repairer_id);
     setSecondaryRepairerId(repairSessionItem?.secondary_repairer_id);
-    setSelectedCustomer(repairSessionItem?.repair_session?.customer)
+    setSelectedCustomer(repairSessionItem?.repairSession?.customer)
+  }
+
+  function resetFields(){
+    setRepairItemId("");
+    setRepairSessionId("");
+    setItem("");
+    setFault("");
+    setCategoryId("");
+    setWeight("");
+    setMake("");
+    setModel("");
+    setNotes("");
+    setRepairStatus("");
+    setSessionDate(selectedDate);
+    setLocationId(selectedLocation?.id);
+    setPrimaryRepairerId("");
+    setSecondaryRepairerId("");
+    setSelectedCustomer(null);
+
+    setCustomerId("");
+    setTitle("");
+    setFirstName("");
+    setLastName("");
+    setPhone("");
+    setEmail("");
+  }
+
+  function closeModal(){
+    resetFields();
+    formRef.current?.reset();
+    setIsOpen(false);
   }
 
   useEffect(()=>{
@@ -68,32 +107,53 @@ const ItemModal = forwardRef(({ categories, repairers, locations, onSave, onCanc
     }
   }, [selectedDate]);
 
+  useEffect(()=>{
+    if(!selectedCustomer || !selectedCustomer.id){
+      return;
+    }
+
+    setCustomerId(selectedCustomer.id);
+    setTitle(selectedCustomer.title);
+    setFirstName(selectedCustomer.firstname);
+    setLastName(selectedCustomer.lastname);
+    setPhone(selectedCustomer.phone);
+    setEmail(selectedCustomer.email);
+  }, [selectedCustomer]);
+
   const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (formData: FormData) => {
     const formDataEntries = formData.entries();
+    let result = null;
+    console.log('repair item id', typeof repairItemId)
+    if(!repairItemId || (repairItemId + "").trim().length==0){
+      result = await createRepairItem(formData);
+    }else{
+      result = await updateRepairItem(formData);
+    }
 
-    const result = await createRepairItem(formData);
     if(result.success){
-      setIsOpen(false);
+      closeModal();
       if(onSave){
         onSave();
       }
     }else{
       setError(result.error || "Unknown error occured");
     }
-    formRef.current?.reset();
+    
   };
 
   useImperativeHandle(ref, () => ({
     // Define the function the parent can call
     open(editItem: any) {
-      console.log("No editing", editItem);
       setIsOpen(true);
       if(editItem){
         setCurrentItem(editItem);
-        setSelectedCustomer(editItem.customer);
+      }else{
+        setSessionDate(selectedDate);
+        setLocationId(selectedLocation?.id);
       }
+
     }
   }));
 
@@ -105,7 +165,7 @@ const ItemModal = forwardRef(({ categories, repairers, locations, onSave, onCanc
           <h2 className="text-xl font-semibold">Log New Repair Item</h2>
           <button 
                 type="button"
-                onClick={() => setIsOpen(false)}
+                onClick={() => closeModal()}
                 className="p-0! bg-gray-200 ml-auto border border-gray-400 rounded"
               >
                 <X />
@@ -122,6 +182,8 @@ const ItemModal = forwardRef(({ categories, repairers, locations, onSave, onCanc
         </div>)}
         <div className="flex-1 overflow-y-auto px-8 custom-scrollbar">
           <form action={handleSubmit} ref={formRef} className="p-6 space-y-4">
+            <input type="hidden" value={repairItemId} name="repairItemId" readOnly />
+            <input type="hidden" value={repairSessionId} name="repairSessionId" readOnly />
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
                 <label className="block text-sm font-medium mb-1">Item Name</label>
@@ -172,28 +234,28 @@ const ItemModal = forwardRef(({ categories, repairers, locations, onSave, onCanc
               
               {isCustomerExpanded && (
                 <div className="p-4 grid grid-cols-3 gap-3 bg-white border-t">
-                  <input type="hidden" name="customerId" value={selectedCustomer?.id || ""} />
+                  <input type="hidden" name="customerId" value={customerId || ""} />
                   <div className="col-span-1">
                     <label className="block text-xs font-semibold mb-1">Title</label>
-                    <select name="customerTitle" className="w-full border p-2 rounded text-sm" value={selectedCustomer?.title || ""} onChange={(e)=>{}}>
+                    <select name="customerTitle" className="w-full border p-2 rounded text-sm" value={title} onChange={(e)=>{setTitle(e.target.value)}}>
                       <option>Mr</option><option>Mrs</option><option>Ms</option><option>Dr</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs font-semibold mb-1">First Name</label>
-                    <input name="customerFirstName" className="w-full border p-2 rounded text-sm" placeholder="John" value={selectedCustomer?.firstname || ""} onChange={(e)=>{}} />
+                    <input name="customerFirstName" className="w-full border p-2 rounded text-sm required" placeholder="John" value={firstName || ""} onChange={(e)=>{setFirstName(e.target.value)}} />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold mb-1">Last Name</label>
-                    <input name="customerLastName" className="w-full border p-2 rounded text-sm" placeholder="Doe" value={selectedCustomer?.lastname || ""} onChange={(e)=>{}} />
+                    <input name="customerLastName" className="w-full border p-2 rounded text-sm required" placeholder="Doe" value={lastName} onChange={(e)=>{setLastName(e.target.value)}} />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Mobile</label>
-                    <input name="customerPhone" type="phone" className="w-full border p-2 rounded text-sm" placeholder="04xxxxxxxx" value={selectedCustomer?.phone || ""} onChange={(e)=>{}} /> 
+                    <label className="block text-xs font-semibold mb-1">Phone/Mobile Number</label>
+                    <input name="customerPhone" type="phone" className="w-full border p-2 rounded text-sm required" placeholder="04xxxxxxxx" value={phone} onChange={(e)=>{setPhone(e.target.value)}} /> 
                   </div>
                   <div className="col-span-2">
                     <label className="block text-xs font-semibold mb-1">Email</label>
-                    <input name="customerEmail" type="email" className="w-full border p-2 rounded text-sm" placeholder="john@example.com" value={selectedCustomer?.email || ""} onChange={(e)=>{}}/>
+                    <input name="customerEmail" type="email" className="w-full border p-2 rounded text-sm" placeholder="john@example.com" value={email} onChange={(e)=>{setEmail(e.target.value)}}/>
                   </div>
                 </div>
               )}
@@ -289,14 +351,14 @@ const ItemModal = forwardRef(({ categories, repairers, locations, onSave, onCanc
 
             <div className="flex justify-end gap-3 mt-6">
               <button type="button" onClick={() => {
-                  setIsOpen(false);
+                  closeModal();
                   if(onCancel) {
                     onCancel();
                   }
                 }} className="px-4 py-2 text-gray-600">Cancel</button>
-              <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+              {/*<button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
                 Add More Items...
-              </button>
+              </button>*/}
               <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
                 Save
               </button>

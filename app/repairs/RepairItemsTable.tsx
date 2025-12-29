@@ -3,9 +3,10 @@
 import Link from "next/link";
 import ItemModal from "./ItemModal";
 import { useRef, useState } from "react";
-import { upsertRepairItem, deleteRepairItem } from "@/actions/repairItems";
+import { deleteRepairItem } from "@/actions/repairItems";
 import { Pagination } from "@/app/types";
 import Paginator from "@/app/components/Paginator";
+import { Edit, PackagePlus, Trash2 } from "lucide-react";
 
 
 export default function  RepairItemsTable( {repairSessionItems, categories, repairers,locations, pagination} 
@@ -14,10 +15,6 @@ export default function  RepairItemsTable( {repairSessionItems, categories, repa
 
   const [itemModalState, setItemModalState] = useState("CLOSED");
   const [editingId, setEditingId] = useState<number | null>(null);
-     const handleEditSave = async (formData: FormData) => {
-       await upsertRepairItem(formData);
-       setEditingId(null); // Close the edit mode on success
-     };
 
   const itemModal:any = useRef(null);
 
@@ -39,9 +36,9 @@ export default function  RepairItemsTable( {repairSessionItems, categories, repa
         <div className="flex-shrink-0">
           <button
             onClick={() => openAddItem()}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
-            + Add New Item
+            <PackagePlus className="w-5 h-5 mr-1"/> Add New Item
           </button>
           <ItemModal categories={categories} repairers={repairers} locations={locations} ref={itemModal}/>
         </div>
@@ -52,7 +49,7 @@ export default function  RepairItemsTable( {repairSessionItems, categories, repa
           <thead className="text-xs text-gray-700 uppercase bg-gray-100">
             <tr>
               <th className="px-6 py-3">ID</th>
-              <th className="px-6 py-3">Item</th>
+              <th className="px-6 py-3">Item (Make/Model) / Customer</th>
               <th className="px-6 py-3">Fault</th>
               <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3 text-right">Weight</th>
@@ -62,15 +59,16 @@ export default function  RepairItemsTable( {repairSessionItems, categories, repa
           <tbody>
             {repairSessionItems.map((rsItem) => (
               <tr key={rsItem.repair_session_id+":"+rsItem.repair_item_id} className="bg-white border-b hover:bg-gray-50">
-                <td className="px-6 py-4 font-mono">{rsItem?.repair_item?.id}</td>
-                <td className="px-6 py-4 font-semibold text-gray-900">{rsItem?.repair_item?.item} {rsItem?.repair_item?.make} {rsItem?.repair_item?.model}</td>
-                <td className="px-6 py-4">{rsItem?.repair_item?.fault}</td>
+                <td className="px-6 py-4 font-mono">{rsItem?.repairItem?.id}</td>
+                <td className="px-6 py-4 text-gray-900">{rsItem?.repairItem?.item} ({rsItem?.repairItem?.make} {rsItem?.repairItem?.model})
+                   <br/><span className="text-xs">{rsItem?.repairSession.customer.title}. {rsItem?.repairSession.customer.firstname} {rsItem?.repairSession.customer.lastname} </span></td>
+                <td className="px-6 py-4">{rsItem?.repairItem?.fault}</td>
                 <td className="px-6 py-4">
                   <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                    {rsItem?.repair_item?.last_repair_status}
+                    {rsItem?.repairItem?.last_repair_status}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-right">{rsItem?.repair_item?.weight}kg</td>
+                <td className="px-6 py-4 text-right">{rsItem?.repairItem?.weight}kg</td>
 
                 <td className="px-6 py-4 text-right space-x-4">
 
@@ -78,19 +76,21 @@ export default function  RepairItemsTable( {repairSessionItems, categories, repa
                     onClick={() => {
                       openEditItem(rsItem);
                     } }
-                    className="text-blue-600 hover:underline font-medium"
+                    className="rounded-md p-1 mr-1 text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                              title="Edit Item"
                   >
-                    Edit
+                    <Edit className="h-5 w-5" />
                   </button>
                   <button 
                     onClick={async () => {
-                      if(confirm(`Are you sure you want to delete line - ${rsItem?.repair_item?.item}?`)) {
-                        await deleteRepairItem(rsItem?.repair_item?.id);
+                      if(confirm(`Are you sure you want to delete line - ${rsItem?.repairItem?.item}?`)) {
+                        await deleteRepairItem(rsItem?.repairItem?.id);
                       }
                     }} 
-                    className="text-red-600 hover:underline font-medium"
+                    className="rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                              title="Delete Item"
                   >
-                    Delete
+                    <Trash2 className="h-5 w-5" />
                   </button>
                 </td>
               </tr>
