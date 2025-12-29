@@ -37,6 +37,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const dbUser = await getUserByEmail(token.email || "");
         token.roles = dbUser?.roles?.split(",").sort(); // Add role to token
       }
+      console.log('token returned ', token);
       return token;
     },
     async session({ session, token }) {
@@ -44,6 +45,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.roles = token.roles as string[] ;
       }
+      console.log('session returned ', session);
       return session;
     },
   },
