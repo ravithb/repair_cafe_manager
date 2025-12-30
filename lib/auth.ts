@@ -1,5 +1,5 @@
 import GoogleProvider from "next-auth/providers/google";
-import NextAuth, { DefaultSession, Session, User }  from "next-auth";
+import NextAuth, { DefaultSession, Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import { getUserByEmail } from "@/actions/users";
 
@@ -43,10 +43,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       // 2. Pass role to the client session
       if (session.user) {
-        session.user.roles = token.roles as string[] ;
+        session.user.roles = token.roles as string[];
       }
       console.log('session returned ', session);
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url
+      return baseUrl
+    }
   },
 });
