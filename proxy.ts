@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { auth } from "@/lib/auth";
 
 export async function proxy(req: NextRequest) {
-  const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const session = await auth();
 
   // // Define paths that require authentication
   const protectedPaths = ['/repairs', '/settings'];
@@ -16,10 +16,10 @@ export async function proxy(req: NextRequest) {
   console.log('session is ', session);
 
   // // If not logged in and trying to access a protected path, redirect to login
-  // if (!session && isProtectedPath) {
-  //   console.log(req.url);
-  //   return NextResponse.redirect(new URL('/login?callbackUrl='+encodeURIComponent(req.url), req.url));
-  // }
+  if (!session && isProtectedPath) {
+    console.log(req.url);
+    return NextResponse.redirect(new URL('/login?callbackUrl='+encodeURIComponent(req.url), req.url));
+  }
 
   return NextResponse.next();
 }
