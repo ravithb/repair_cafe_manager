@@ -13,7 +13,8 @@ export async function proxy(req: NextRequest) {
   console.log('------------');
   console.log(req.url);
   console.log('is protected', isProtectedPath);
-  
+  console.log('session is ', session);
+
   // // If not logged in and trying to access a protected path, redirect to login
   if (!session && isProtectedPath) {
     console.log(req.url);

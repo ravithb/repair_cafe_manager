@@ -27,7 +27,7 @@ export default function Header() {
       <div className="text-xl font-semibold text-indigo-600">
         Fixlog :: Repair cafe manager
       </div>
-      {session && (<>
+      {session ? (<>
       {/* Right side: Controls (Location, User Icon, Logout) */}
       <div className="flex items-center space-x-4">
         {/* Pass the server-fetched data to the client component */}
@@ -36,7 +36,7 @@ export default function Header() {
         {/* User Icon/Avatar */}
         <div 
           title={(session?.user?.name + " : " + session?.user?.roles?.join(","))}
-          className="p-2 bg-indigo-100 text-indigo-600 rounded-full cursor-pointer hover:bg-indigo-200 transition duration-150"
+          className="p-2 bg-indigo-100 text-blue-600 rounded-full cursor-pointer hover:bg-blue-200 transition duration-150"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -51,7 +51,14 @@ export default function Header() {
           Logout
         </button>        
       </div>
-      </>)}
+      </>) : (
+        <button
+          onClick={()=> { signIn("google", { "callbackUrl": "/"}) }}
+          className="px-3 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 transition duration-150"
+        >
+          Login
+        </button>   
+      )}
     </header>
   );
 }
